@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roller | AI Evershine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a3a, #0d1b2a);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #4ECCA3;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4ECCA3, #2E8BC0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+
+        .game-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .player {
+            flex: 1;
+            min-width: 250px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .player:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .player h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #4ECCA3;
+        }
+
+        .dice-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            perspective: 1000px;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            backface-visibility: hidden;
+        }
+
+        .dice-dot {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #333;
+            position: absolute;
+        }
+
+        /* Dice face configurations */
+        .face-1 .dot-1 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .face-2 .dot-1 { top: 25%; left: 25%; }
+        .face-2 .dot-2 { bottom: 25%; right: 25%; }
+        
+        .face-3 .dot-1 { top: 25%; left: 25%; }
+        .face-3 .dot-2 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .face-3 .dot-3 { bottom: 25%; right: 25%; }
+        
+        .face-4 .dot-1 { top: 25%; left: 25%; }
+        .face-4 .dot-2 { top: 25%; right: 25%; }
+        .face-4 .dot-3 { bottom: 25%; left: 25%; }
+        .face-4 .dot-4 { bottom: 25%; right: 25%; }
+        
+        .face-5 .dot-1 { top: 25%; left: 25%; }
+        .face-5 .dot-2 { top: 25%; right: 25%; }
+        .face-5 .dot-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .face-5 .dot-4 { bottom: 25%; left: 25%; }
+        .face-5 .dot-5 { bottom: 25%; right: 25%; }
+        
+        .face-6 .dot-1 { top: 25%; left: 25%; }
+        .face-6 .dot-2 { top: 25%; right: 25%; }
+        .face-6 .dot-3 { top: 50%; left: 25%; transform: translateY(-50%); }
+        .face-6 .dot-4 { top: 50%; right: 25%; transform: translateY(-50%); }
+        .face-6 .dot-5 { bottom: 25%; left: 25%; }
+        .face-6 .dot-6 { bottom: 25%; right: 25%; }
+
+        /* Dice face positions */
+        .face-1 { transform: rotateY(0deg) translateZ(90px); }
+        .face-2 { transform: rotateY(180deg) translateZ(90px); }
+        .face-3 { transform: rotateY(90deg) translateZ(90px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(90px); }
+        .face-5 { transform: rotateX(90deg) translateZ(90px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(90px); }
+
+        .player-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4ECCA3;
+            margin-top: 10px;
+        }
+
+        .controls {
+            margin: 30px 0;
+        }
+
+        .roll-btn {
+            background: linear-gradient(45deg, #4ECCA3, #2E8BC0);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .roll-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .roll-btn:active {
+            transform: translateY(1px);
+        }
+
+        .roll-btn i {
+            margin-right: 10px;
+        }
+
+        .result {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner {
+            color: #4ECCA3;
+            text-shadow: 0 0 10px rgba(78, 204, 163, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 200px;
+        }
+
+        .stat-box h3 {
+            color: #4ECCA3;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #b0b0b0;
+            font-size: 1rem;
+        }
+
+        footer a {
+            color: #4ECCA3;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .player {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-dice"></i>
+                <h1>Dice Roller</h1>
+            </div>
+            <p class="subtitle">Roll the dice and challenge your luck!</p>
+        </header>
+
+        <div class="game-area">
+            <div class="player">
+                <h2>Player 1</h2>
+                <div class="dice-container">
+                    <div class="dice" id="dice1">
+                        <div class="dice-face face-1">
+                            <div class="dice-dot dot-1"></div>
+                        </div>
+                        <div class="dice-face face-2">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                        </div>
+                        <div class="dice-face face-3">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                        </div>
+                        <div class="dice-face face-4">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                        </div>
+                        <div class="dice-face face-5">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                            <div class="dice-dot dot-5"></div>
+                        </div>
+                        <div class="dice-face face-6">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                            <div class="dice-dot dot-5"></div>
+                            <div class="dice-dot dot-6"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-score">Score: <span id="score1">0</span></div>
+            </div>
+
+            <div class="player">
+                <h2>Player 2</h2>
+                <div class="dice-container">
+                    <div class="dice" id="dice2">
+                        <div class="dice-face face-1">
+                            <div class="dice-dot dot-1"></div>
+                        </div>
+                        <div class="dice-face face-2">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                        </div>
+                        <div class="dice-face face-3">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                        </div>
+                        <div class="dice-face face-4">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                        </div>
+                        <div class="dice-face face-5">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                            <div class="dice-dot dot-5"></div>
+                        </div>
+                        <div class="dice-face face-6">
+                            <div class="dice-dot dot-1"></div>
+                            <div class="dice-dot dot-2"></div>
+                            <div class="dice-dot dot-3"></div>
+                            <div class="dice-dot dot-4"></div>
+                            <div class="dice-dot dot-5"></div>
+                            <div class="dice-dot dot-6"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-score">Score: <span id="score2">0</span></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="roll-btn" id="rollBtn">
+                <i class="fas fa-sync-alt"></i> Roll Dice
+            </button>
+        </div>
+
+        <div class="result" id="result">
+            Click "Roll Dice" to start!
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Total Games</h3>
+                <div class="stat-value" id="totalGames">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>Player 1 Wins</h3>
+                <div class="stat-value" id="player1Wins">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>Player 2 Wins</h3>
+                <div class="stat-value" id="player2Wins">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>Draws</h3>
+                <div class="stat-value" id="draws">0</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2023 Dice Roller | Powered by <a href="https://www.aievershine.com" target="_blank">AI Evershine</a></p>
+    </footer>
+
+    <script>
+        // Game state
+        let totalGames = 0;
+        let player1Wins = 0;
+        let player2Wins = 0;
+        let draws = 0;
+        let player1Score = 0;
+        let player2Score = 0;
+
+        // DOM elements
+        const rollBtn = document.getElementById('rollBtn');
+        const resultDiv = document.getElementById('result');
+        const dice1 = document.getElementById('dice1');
+        const dice2 = document.getElementById('dice2');
+        const score1 = document.getElementById('score1');
+        const score2 = document.getElementById('score2');
+        const totalGamesEl = document.getElementById('totalGames');
+        const player1WinsEl = document.getElementById('player1Wins');
+        const player2WinsEl = document.getElementById('player2Wins');
+        const drawsEl = document.getElementById('draws');
+
+        // Dice roll function
+        function rollDice() {
+            // Generate random numbers
+            const randomNumber1 = Math.floor(Math.random() * 6) + 1;
+            const randomNumber2 = Math.floor(Math.random() * 6) + 1;
+            
+            // Animate dice
+            animateDice(dice1, randomNumber1);
+            animateDice(dice2, randomNumber2);
+            
+            // Update scores
+            player1Score += randomNumber1;
+            player2Score += randomNumber2;
+            score1.textContent = player1Score;
+            score2.textContent = player2Score;
+            
+            // Determine winner
+            let resultText = '';
+            if (randomNumber1 > randomNumber2) {
+                resultText = '🎉 Player 1 Wins This Round!';
+                player1Wins++;
+            } else if (randomNumber2 > randomNumber1) {
+                resultText = '🎉 Player 2 Wins This Round!';
+                player2Wins++;
+            } else {
+                resultText = '🤝 It\'s a Draw!';
+                draws++;
+            }
+            
+            // Update result display
+            resultDiv.textContent = resultText;
+            resultDiv.classList.add('winner');
+            
+            // Update stats
+            totalGames++;
+            updateStats();
+            
+            // Remove winner class after animation
+            setTimeout(() => {
+                resultDiv.classList.remove('winner');
+            }, 2000);
+        }
+
+        // Animate dice
+        function animateDice(diceElement, face) {
+            // Reset animation
+            diceElement.style.animation = 'none';
+            void diceElement.offsetHeight; // Trigger reflow
+            
+            // Apply rotation based on face value
+            const rotations = {
+                1: 'rotateX(0deg) rotateY(0deg)',
+                2: 'rotateX(0deg) rotateY(180deg)',
+                3: 'rotateX(0deg) rotateY(90deg)',
+                4: 'rotateX(0deg) rotateY(-90deg)',
+                5: 'rotateX(90deg) rotateY(0deg)',
+                6: 'rotateX(-90deg) rotateY(0deg)'
+            };
+            
+            // Add animation
+            diceElement.style.animation = 'roll 1s ease-out';
+            diceElement.style.transform = rotations[face];
+        }
+
+        // Update statistics
+        function updateStats() {
+            totalGamesEl.textContent = totalGames;
+            player1WinsEl.textContent = player1Wins;
+            player2WinsEl.textContent = player2Wins;
+            drawsEl.textContent = draws;
+        }
+
+        // Event listener for roll button
+        rollBtn.addEventListener('click', rollDice);
+
+        // Add CSS for dice rolling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes roll {
+                0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+                50% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+                100% { transform: var(--final-rotation); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
